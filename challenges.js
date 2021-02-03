@@ -18,22 +18,24 @@ let dice0DOM, dice1DOM, ouchDOM, panelPl0DOM, panelPl1DOM;
 
 init();
 
-let rolls$ = Rx.Observable.fromEvent(rollButton, "click");
+let rolls$ = rxjs.fromEvent(rollButton, "click");
 
 rolls$
-  .map(() => {
-    // Gen Random numbers
-    let dice0 = Math.floor(Math.random() * 6) + 1;
-    let dice1 = Math.floor(Math.random() * 6) + 1;
-    return { dice0: dice0, dice1: dice1 };
-  })
+  .pipe(
+    rxjs.operators.map(() => {
+      // Gen Random numbers
+      let dice0 = Math.floor(Math.random() * 6) + 1;
+      let dice1 = Math.floor(Math.random() * 6) + 1;
+      return { dice0: dice0, dice1: dice1 };
+    })
+  )
   .subscribe(({ dice0, dice1 }) => {
     if (gamePlaying) {
       // Display the result
       dice0DOM.style.display = "block";
-      dice0DOM.src = "dice-" + dice0 + ".png";
+      dice0DOM.src = "images/dice-" + dice0 + ".png";
       dice1DOM.style.display = "block";
-      dice1DOM.src = "dice-" + dice1 + ".png";
+      dice1DOM.src = "images/dice-" + dice1 + ".png";
 
       // Catastrophy check
       if (dice1 === 6 || dice0 === 6) {
@@ -62,7 +64,7 @@ rolls$
     }
   });
 
-let holds$ = Rx.Observable.fromEvent(holdButton, "click");
+let holds$ = rxjs.fromEvent(holdButton, "click");
 holds$.subscribe(() => {
   if (gamePlaying) {
     // Add CURRENT score to GLOBAL score
@@ -125,12 +127,12 @@ function nextPlayer() {
   dice1DOM.style.display = "none";
 }
 
-let resets$ = Rx.Observable.fromEvent(resetButton, "click");
+let resets$ = rxjs.fromEvent(resetButton, "click");
 resets$.subscribe(init);
 
-let maxScores$ = Rx.Observable.fromEvent(maxScoreInput, "keypress");
+let maxScores$ = rxjs.fromEvent(maxScoreInput, "keypress");
 maxScores$
-  .filter((ev) => ev.keyCode === 13)
+  .pipe(rxjs.operators.filter((ev) => ev.keyCode === 13))
   .subscribe((ev) => ev.target.blur());
 
 function init() {
